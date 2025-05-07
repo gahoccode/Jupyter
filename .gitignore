@@ -39,5 +39,5 @@ Thumbs.db
 # *.json
 
 # Output files
-# outputs/
-# images/
+outputs/
+images/
