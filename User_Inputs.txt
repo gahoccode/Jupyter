@@ -1,0 +1,15 @@
+risk_free_rate=0.02
+risk_aversion=1
+sector_lower = {"Sản xuất & Phân phối Điện": 0.1, "Sản xuất thực phẩm": 0.05}  # Min percentages
+sector_upper = {"Sản xuất & Phân phối Điện": 0.4, "Sản xuất thực phẩm/Gas": 0.2}      # Max percentages
+symbols = ['REE', 'FMC', 'DHC'] #Set as default
+start_date = '2024-01-01'
+end_date = '2025-03-19'
+interval = '1D'
+source='VCI'
+weight_bounds=weight_bounds # for long only portfolio
+market_neutral_weights = (-1, 1)
+weight_bounds=market_neutral_weights # for market neutral portfolio that allow short positions
+log_returns=False # Set to True if user wants to use log_returns for calculation
+log_returns=log_returns
+n_samples = 10000 # Set this as default
