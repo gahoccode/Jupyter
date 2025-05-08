@@ -13,5 +13,5 @@ tvdatafeed @ git+https://github.com/rongardF/tvdatafeed.git@e6f6aaa7de439ac6e454
 tradingview-ta==3.3.0 
 nbformat>=5.10.4
 kaleido==0.2.1
-bokeh==3.7.2
 arviz==0.21.0
+ipykernel==6.29.5
