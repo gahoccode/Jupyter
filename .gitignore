@@ -34,8 +34,8 @@ build/
 Thumbs.db
 
 # Large data files (uncomment if needed)
-# *.csv
-# *.xlsx
+*.csv
+*.xlsx
 # *.json
 
 # Output files
