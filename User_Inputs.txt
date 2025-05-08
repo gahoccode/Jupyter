@@ -1,15 +1,80 @@
 risk_free_rate=0.02
 risk_aversion=1
+# Sector Weights for portfolio with constraints
 sector_lower = {"Sản xuất & Phân phối Điện": 0.1, "Sản xuất thực phẩm": 0.05}  # Min percentages
 sector_upper = {"Sản xuất & Phân phối Điện": 0.4, "Sản xuất thực phẩm/Gas": 0.2}      # Max percentages
+# Global Variables
 symbols = ['REE', 'FMC', 'DHC'] #Set as default
 start_date = '2024-01-01'
 end_date = '2025-03-19'
 interval = '1D'
 source='VCI'
-weight_bounds=weight_bounds # for long only portfolio
-market_neutral_weights = (-1, 1)
+
+#Weight bounds for portfolio
+weight_bounds = (0, 1) # weight bounds for long only portfolio
+market_neutral_weights = (-1, 1) # weight_bounds for market neutral portfolio that allow short positions
 weight_bounds=market_neutral_weights # for market neutral portfolio that allow short positions
+
+#Parameters for returns_from_prices function
 log_returns=False # Set to True if user wants to use log_returns for calculation
 log_returns=log_returns
+
+# Number of samples for monte carlo simulation
 n_samples = 10000 # Set this as default
+
+# Stock Selection Parameters
+
+full_params = {
+    # General Information
+    "exchangeName": "HOSE,HNX,UPCOM",
+    "hasFinancialReport": 1,  # Has the latest financial report
+    "industryName": "Banks,Technology,Real Estate",
+    "marketCap": (500, 10000),  # Market cap between 500-10000 billion VND
+    "priceNearRealtime": (10, 100),  # Price between 10-100 VND
+    "foreignVolumePercent": (5, 100),  # At least 5% foreign trading volume
+    "alpha": (0.1, None),  # Positive alpha (excess return vs market)
+    "beta": (0.8, 1.2),  # Beta close to market
+    "freeTransferRate": (30, None),  # At least 30% freely transferable shares
+    
+    # Growth Metrics
+    "revenueGrowth1Year": (10, None),  # At least 10% revenue growth in past year
+    "revenueGrowth5Year": (5, None),  # At least 5% average revenue growth over 5 years
+    "epsGrowth1Year": (5, None),  # At least 5% EPS growth in past year
+    "epsGrowth5Year": (3, None),  # At least 3% average EPS growth over 5 years
+    "lastQuarterRevenueGrowth": (0, None),  # Positive revenue growth in last quarter
+    "lastQuarterProfitGrowth": (0, None),  # Positive profit growth in last quarter
+    
+    # Financial Ratios
+    "grossMargin": (20, None),  # At least 20% gross margin
+    "netMargin": (10, None),  # At least 10% net margin
+    "roe": (15, None),  # At least 15% return on equity
+    "doe": (5, None),  # At least 5% dividend on equity
+    "dividendYield": (3, None),  # At least 3% dividend yield
+    "pe": (5, 20),  # P/E between 5 and 20
+    "pb": (0.5, 3),  # P/B between 0.5 and 3
+    "evEbitda": (None, 15),  # EV/EBITDA below 15
+    "netCashPerMarketCap": (0.1, None),  # Net cash at least 10% of market cap
+    
+    # Price & Volume Movements
+    "totalTradingValue": (1, None),  # At least 1 billion VND trading value today
+    "avgTradingValue20Day": (0.5, None),  # At least 0.5 billion VND average trading value over 20 days
+    "priceGrowth1Week": (-5, 5),  # Price change between -5% and +5% in last week
+    "priceGrowth1Month": (-10, 10),  # Price change between -10% and +10% in last month
+    "percent1YearFromPeak": (None, -20),  # At least 20% below 1-year peak
+    "percent1YearFromBottom": (10, None),  # At least 10% above 1-year bottom
+    
+    # Technical Indicators
+    "rsi14": (30, 70),  # RSI between 30 and 70
+    "priceVsSMA20": "ABOVE",  # Price above 20-day SMA
+    "priceVsSMA50": "ABOVE",  # Price above 50-day SMA
+    "volumeVsVSma20": (1, None),  # Volume above 20-day volume SMA
+    
+    # Market Behavior
+    "strongBuyPercentage": (50, None),  # At least 50% strong buy signals
+    "foreignTransaction": "buyMoreThanSell",  # Foreign investors buying more than selling
+    
+    # TCBS Ratings
+    "stockRating": (3, None),  # Stock rating at least 3 out of 5
+    "businessModel": (3, None),  # Business model rating at least 3 out of 5
+    "financialHealth": (3, None)  # Financial health rating at least 3 out of 5
+}
