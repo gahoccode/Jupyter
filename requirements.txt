@@ -17,3 +17,4 @@ ipykernel==6.29.5
 bokeh==3.7.2
 voila==0.5.8
 jupyter-ai==2.31.4
+git+https://github.com/phamdinhkhanh/vnquant.git
