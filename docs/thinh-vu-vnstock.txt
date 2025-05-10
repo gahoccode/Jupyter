@@ -640,17 +640,217 @@ print(f"TCB ROE: {banks.loc[banks['ticker'] == 'TCB', 'roe'].values[0]:.2f}%")
 # Export results
 banks.to_csv('vietnamese_banks_analysis.csv')
 ```
+# Example Use Cases for vnstock Library
 
-## Notes
+Here are practical example use cases demonstrating how to use the vnstock library for Vietnamese stock market analysis:
 
-1. The `source` parameter in the Vnstock initialization determines the data provider. Currently, the main supported source is 'VCI'.
+## 1. Setting Up and Basic Usage
 
-2. All methods return pandas DataFrames, making it easy to perform further analysis, visualization, or export the data.
+```python
+from vnstock import Vnstock
+# Initialize with a default stock symbol and data source
+stock = Vnstock().stock(symbol='ACB', source='VCI')
+```
 
-3. The `dropna` parameter is useful for cleaning the data when you only want to analyze rows that have values.
+## 2. Market Overview Analysis
 
-4. Choose the appropriate language option based on your needs - Vietnamese ('vi') may be more accurate for native terminology, while English ('en') is useful for international analysis.
+**Get list of all VN30 stocks for market analysis:**
+```python
+vn30_stocks = stock.listing.symbols_by_group('VN30')
+print(f"There are {len(vn30_stocks)} stocks in the VN30 index")
+```
 
-5. The library methods are designed to work with Vietnamese stock market data and may not be directly applicable to other markets.
+**Create a market dashboard for top banking stocks:**
+```python
+banking_board = stock.trading.price_board(['VCB','ACB','TCB','BID','MBB'])
+# Format as a dashboard with key metrics
+banking_board_display = banking_board[['listing.symbol', 'match.match_price', 
+                                       'match.price_change_ratio', 'match.total_volume']]
+```
 
-6. The Stock Screener functionality was introduced in Vnstock version 3.2.0 (March 2025).
+## 3. Technical Analysis
+
+**Get historical data for moving average analysis:**
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Get 1-year historical data for VNIndex
+vnindex_hist = stock.quote.history(symbol='VNINDEX', start='2024-01-01', end='2025-03-19', interval='1D')
+
+# Calculate moving averages
+vnindex_hist['MA20'] = vnindex_hist['close'].rolling(window=20).mean()
+vnindex_hist['MA50'] = vnindex_hist['close'].rolling(window=50).mean()
+vnindex_hist['MA200'] = vnindex_hist['close'].rolling(window=200).mean()
+
+# Plot the chart
+plt.figure(figsize=(12, 6))
+plt.plot(vnindex_hist['time'], vnindex_hist['close'], label='VNINDEX')
+plt.plot(vnindex_hist['time'], vnindex_hist['MA20'], label='MA20')
+plt.plot(vnindex_hist['time'], vnindex_hist['MA50'], label='MA50')
+plt.plot(vnindex_hist['time'], vnindex_hist['MA200'], label='MA200')
+plt.title('VNINDEX with Moving Averages')
+plt.legend()
+plt.grid(True)
+```
+
+**Analyze intraday trading pattern:**
+```python
+# Get intraday data to analyze trading volume by time of day
+intraday = stock.quote.intraday(symbol='ACB', page_size=10000)
+
+# Group data by hour to see time-based trading patterns
+intraday['hour'] = pd.to_datetime(intraday['time']).dt.hour
+hourly_volume = intraday.groupby('hour')['volume'].sum()
+```
+
+## 4. Fundamental Analysis
+
+**Evaluate company financial health:**
+```python
+# Get balance sheet and income statement data
+balance_sheet = stock.finance.balance_sheet(period='year', lang='en')
+income_stmt = stock.finance.income_statement(period='year', lang='en')
+
+# Calculate basic financial metrics year-over-year
+recent_years = balance_sheet['yearReport'].unique()[-5:]  # Last 5 years
+filtered_bs = balance_sheet[balance_sheet['yearReport'].isin(recent_years)]
+filtered_is = income_stmt[income_stmt['yearReport'].isin(recent_years)]
+
+# Calculate debt-to-equity trend
+filtered_bs['debt_to_equity'] = (filtered_bs['TOTAL ASSETS (Bn. VND)'] - filtered_bs['OWNER\'S EQUITY(Bn.VND)']) / filtered_bs['OWNER\'S EQUITY(Bn.VND)']
+
+# Plot financial metrics trend
+plt.figure(figsize=(12, 8))
+plt.subplot(2, 1, 1)
+plt.plot(filtered_is['yearReport'], filtered_is['Revenue (Bn. VND)'], marker='o', label='Revenue')
+plt.plot(filtered_is['yearReport'], filtered_is['Attribute to parent company (Bn. VND)'], marker='o', label='Net Profit')
+plt.title('Revenue and Profit Trend')
+plt.legend()
+
+plt.subplot(2, 1, 2)
+plt.plot(filtered_bs['yearReport'], filtered_bs['debt_to_equity'], marker='o')
+plt.title('Debt-to-Equity Ratio')
+```
+
+## 5. Competitor Analysis
+
+```python
+# Compare financial ratios across banking sector
+banks = ['VCB', 'ACB', 'TCB', 'BID', 'MBB']
+bank_ratios = {}
+
+for bank in banks:
+    bank_stock = Vnstock().stock(symbol=bank, source='VCI')
+    ratios = bank_stock.finance.ratio(period='year', lang='en').iloc[0]  # Most recent year
+    bank_ratios[bank] = {
+        'ROE': ratios['ROE (%)'],
+        'ROA': ratios['ROA (%)'],
+        'P/E': ratios['P/E'],
+        'P/B': ratios['P/B']
+    }
+
+bank_comparison = pd.DataFrame(bank_ratios).T
+print("Banking Sector Comparison:")
+print(bank_comparison)
+```
+
+## 6. Investment Screening
+
+```python
+# Screen for high-ROE stocks with low P/B ratio
+screener = stock.screener.stock(params={"exchangeName": "HOSE"}, limit=100)
+filtered_stocks = screener[(screener['roe'] > 15) & 
+                          (screener['price_vs_sma100'] == 'Giá nằm trên SMA(100)') &
+                          (screener['last_quarter_profit_growth'] > 0)]
+
+# Sort by market cap to find the largest companies meeting criteria
+investment_candidates = filtered_stocks.sort_values('market_cap', ascending=False).head(10)
+print("Top 10 Investment Candidates:")
+print(investment_candidates[['ticker', 'market_cap', 'roe', 'last_quarter_profit_growth']])
+```
+
+## 7. Ownership Analysis
+
+```python
+# Analyze foreign ownership in a company
+company_info = stock.company
+ownership = company_info.shareholders()
+
+# Calculate total percent owned by foreigners
+foreign_owners = ownership[ownership['share_holder'].str.contains('Limited|Ltd|LLC|Fund|Corp', case=False, na=False)]
+foreign_ownership_pct = foreign_owners['share_own_percent'].sum()
+
+print(f"Foreign ownership percentage: {foreign_ownership_pct:.2%}")
+```
+
+## 8. Event Impact Analysis
+
+```python
+# Analyze stock performance around dividend events
+events = stock.company.events()
+dividend_events = events[events['event_list_name'] == 'Trả cổ tức bằng tiền mặt']
+
+for index, event in dividend_events.iterrows():
+    # Get stock prices around the ex-dividend date
+    exright_date = event['exright_date']
+    start_date = pd.to_datetime(exright_date) - pd.Timedelta(days=30)
+    end_date = pd.to_datetime(exright_date) + pd.Timedelta(days=30)
+    
+    # Convert dates to the required string format 'YYYY-MM-DD'
+    start_str = start_date.strftime('%Y-%m-%d')
+    end_str = end_date.strftime('%Y-%m-%d')
+    
+    # Get price history around the event
+    event_prices = stock.quote.history(start=start_str, end=end_str, interval='1D')
+    
+    # Additional analysis on price behavior before/after ex-dividend date
+    # ...
+```
+
+## 9. Seasonal Performance Analysis
+
+```python
+# Analyze quarterly performance patterns over multiple years
+quarterly_data = stock.finance.income_statement(period='quarter', lang='en')
+
+# Group by quarter to analyze seasonal patterns
+quarterly_data['quarter'] = quarterly_data['lengthReport']
+quarterly_perf = quarterly_data.groupby(['yearReport', 'quarter'])['Revenue YoY (%)'].mean().unstack()
+
+# Plot seasonal performance by quarter
+quarterly_perf.mean().plot(kind='bar', figsize=(10, 6), title='Average Quarterly Performance')
+```
+
+## 10. News Sentiment Analysis
+
+```python
+# Basic news sentiment analysis
+import re
+from textblob import TextBlob  # You'll need to install this package
+
+# Get recent news
+recent_news = stock.company.news().head(20)
+
+# Simple sentiment analysis function
+def analyze_sentiment(text):
+    if isinstance(text, str):
+        # Clean text
+        text = re.sub(r'<[^>]+>', '', text)  # Remove HTML tags
+        return TextBlob(text).sentiment.polarity  # Return polarity (-1 to 1)
+    return 0
+
+# Apply sentiment analysis to news titles
+recent_news['sentiment'] = recent_news['news_title'].apply(analyze_sentiment)
+
+# Classify sentiment
+recent_news['sentiment_category'] = recent_news['sentiment'].apply(
+    lambda x: 'Positive' if x > 0.05 else ('Negative' if x < -0.05 else 'Neutral'))
+
+# Count by sentiment
+sentiment_count = recent_news['sentiment_category'].value_counts()
+print("News Sentiment Analysis:")
+print(sentiment_count)
+```
+
+These examples demonstrate the versatility of the vnstock library for various types of stock market analysis in the Vietnamese context, from technical and fundamental analysis to screening, competitor comparison, and event impact studies.
