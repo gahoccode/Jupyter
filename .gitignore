@@ -38,6 +38,10 @@ Thumbs.db
 *.xlsx
 # *.json
 
+# Exceptions - tracked CSV files
+!data/FamaFrench3FACTOR.csv
+!data/FamaFrench5FACTOR.csv
+
 # Output files
 outputs/
 images/
