@@ -49,3 +49,9 @@ iframe_figures/
 
 # Windsurf
 .windsurf
+
+# PandasAI
+pandasai.log
+
+# AI
+cache/
