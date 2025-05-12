@@ -46,3 +46,6 @@ Thumbs.db
 outputs/
 images/
 iframe_figures/
+
+# Windsurf
+.windsurf
