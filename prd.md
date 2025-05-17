@@ -9,9 +9,9 @@ End Date field: Set to "2025-05-17" (current date)
 Status message: "Data updated successfully!" (in a green box)
 
 
-Navigation Tabs (top middle and right):
+Navigation Tabs 
 
-Financial Metrics
+Financial Metrics (ROE vs ROCE and Net OCF)
 Cash Flow (waterfall chart)
 WACC (line chart)
-Valuation
+Valuation (intrinsic value)
