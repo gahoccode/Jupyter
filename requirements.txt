@@ -20,3 +20,4 @@ jupyter-ai==2.31.4
 git+https://github.com/phamdinhkhanh/vnquant.git
 langchain==0.3.25
 langchain-openai==0.3.16
+ta-lib==0.6.3
