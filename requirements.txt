@@ -21,3 +21,6 @@ git+https://github.com/phamdinhkhanh/vnquant.git
 langchain==0.3.25
 langchain-openai==0.3.16
 ta-lib==0.6.3
+# Added for CafeF downloader script
+requests>=2.28.0
+tqdm>=4.64.0
