@@ -44,6 +44,7 @@ Thumbs.db
 
 # Output files
 outputs/
+output/
 images/
 iframe_figures/
 
