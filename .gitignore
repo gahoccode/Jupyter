@@ -47,7 +47,7 @@ outputs/
 output/
 images/
 iframe_figures/
-
+exports/
 # Windsurf
 .windsurf
 
