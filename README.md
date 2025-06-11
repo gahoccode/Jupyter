@@ -17,6 +17,22 @@ A Python application for fetching, analyzing, and optimizing Vietnamese stock po
 
 ## Installation
 
+### Using UV (Recommended)
+
+1. Clone this repository
+2. Install UV if you haven't already:
+   ```
+   curl -fsSL https://astral.sh/uv/install.sh | bash
+   ```
+3. Sync dependencies using UV (no need to create a virtual environment):
+   ```
+   uv sync
+   ```
+
+Note: UV automatically manages isolated environments, so you don't need to create or activate a virtual environment manually.
+
+### Using Traditional pip (Alternative)
+
 1. Clone this repository
 2. Create a virtual environment:
    ```
@@ -24,6 +40,8 @@ A Python application for fetching, analyzing, and optimizing Vietnamese stock po
    ```
 3. Activate the virtual environment:
    ```
+   # On macOS/Linux
+   source .venv/bin/activate
    # On Windows
    .venv\Scripts\activate
    ```
@@ -34,11 +52,23 @@ A Python application for fetching, analyzing, and optimizing Vietnamese stock po
 
 ## Usage
 
-Run the main application:
+### Running Jupyter Notebook/Lab
 
-```python
-python app.py
+With UV:
+```bash
+uv run jupyter notebook
+# or
+uv run jupyter lab
 ```
+
+With traditional virtual environment:
+```bash
+jupyter notebook
+# or
+jupyter lab
+```
+
+### Running the Application
 
 This will:
 1. Fetch historical data for the specified stock symbols
@@ -52,4 +82,7 @@ This will:
 
 ## Notes
 
-This project uses vnstock 3.x API for fetching Vietnamese stock data. Make sure to use compatible versions of dependencies as specified in the requirements.txt file.
+- This project uses vnstock 3.x API for fetching Vietnamese stock data.
+- Dependencies are managed through `pyproject.toml` and can be installed using UV.
+
+- When using UV, all commands should be prefixed with `uv run` to ensure they use the correct environment.
