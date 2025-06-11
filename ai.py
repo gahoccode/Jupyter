@@ -7,7 +7,6 @@ start_date = '2024-01-01'
 end_date = '2025-03-19'
 interval = '1D'
 stock = Vnstock().stock(symbol='REE', source='VCI')
-candle_df = stock.quote.history(start= start_date, end= end_date)
 
 CashFlow = stock.finance.cash_flow(period='year')
 
